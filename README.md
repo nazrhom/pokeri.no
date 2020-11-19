@@ -1,6 +1,4 @@
-# pokeri.no
-
-# Pokerino (?) 
+# pokeri.no 
 
 ## Readme
 
