@@ -1,32 +1,58 @@
 package http
 
 import (
+	"encoding/json"
+	"github.com/pokeri.no/api"
+	"github.com/pokeri.no/api/services"
 	log "github.com/sirupsen/logrus"
+	"io"
 	netHttp "net/http"
 )
+
 
 type Controller interface {
 	Route() string
 	Handle(w netHttp.ResponseWriter, req *netHttp.Request)
 }
-type StartGameController struct {
+type GameController struct {
+	GameService *services.GameService
+	SocketService *services.SocketService
 }
 
-func (controller *StartGameController) Handle(w netHttp.ResponseWriter, req *netHttp.Request) {
+func (controller *GameController) StartGame(w netHttp.ResponseWriter, req *netHttp.Request) {
 	log.Info("Handling Start Game Request")
 }
 
-func (controller *StartGameController) Route() string {
-	return "/game"
-}
-
-type ActionController struct {
-}
-
-func (controller *ActionController) Handle(w netHttp.ResponseWriter, req *netHttp.Request) {
+func (controller *GameController) Action(w netHttp.ResponseWriter, req *netHttp.Request) {
 	log.Info("Handling Action")
+	action, err := DeserializeActionRequest(req.Body)
+	if err != nil {
+		netHttp.Error(w, err.Error(), netHttp.StatusBadRequest)
+		return
+	}
+	aErr := controller.GameService.Action(action)
+	if aErr != nil {
+		netHttp.Error(w, aErr.Error(), netHttp.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(200)
+
 }
 
-func (controller *ActionController) Route() string {
-	return "/action"
+func DeserializeActionRequest(body io.ReadCloser) (api.ActionModel, error){
+	var action api.ActionModel
+	err := json.NewDecoder(body).Decode(&action)
+	if err != nil {
+		return api.ActionModel{}, err
+	}
+	return action, nil
 }
+func DeserializeGameRequest(body io.ReadCloser) (api.GameModel, error) {
+	var game api.GameModel
+	err := json.NewDecoder(body).Decode(&game)
+	if err != nil {
+		return api.GameModel{}, err
+	}
+	return game, nil
+}
+

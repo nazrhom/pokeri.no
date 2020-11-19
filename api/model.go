@@ -55,7 +55,7 @@ type GameModel struct {
 	SB            int
 	StartingChips int
 	BlindsTimer   int
-	BuyInt        int
+	BuyIn        int
 
 	Hands []HandModel
 	Id    string

@@ -14,7 +14,7 @@ type Database struct {
 	ctx    context.Context
 }
 
-func InitDatabase(config DbConfig) *Database {
+func InitDatabase(config api.DbConfig) *Database {
 	dbAddr := config.Hostname + ":" + config.Port
 	client := redis.NewClient(&redis.Options{Addr: dbAddr,
 		Password: config.Password,
