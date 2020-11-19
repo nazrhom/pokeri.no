@@ -1,13 +1,13 @@
 package http
 
 import (
-	netHttp "net/http"
 	log "github.com/sirupsen/logrus"
+	netHttp "net/http"
 )
 
 type Controller interface {
 	Route() string
-	Handle(w netHttp.ResponseWriter,req *netHttp.Request)
+	Handle(w netHttp.ResponseWriter, req *netHttp.Request)
 }
 type StartGameController struct {
 }
