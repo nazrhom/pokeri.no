@@ -3,60 +3,39 @@ package api
 type PhaseName string
 type ActionName string
 
-const (
-	PRE_FLOP PhaseName = "PreFlop"
-	FLOP     PhaseName = "Flop"
-	TURN     PhaseName = "Turn"
-	RIVER    PhaseName = "River"
-)
-
-const (
-	BET   ActionName = "PreFlop"
-	RAISE ActionName = "Flop"
-	CHECK ActionName = "Turn"
-	FOLD  ActionName = "River"
-)
-
 type Model interface{}
 
 type ActionModel struct {
-	Name   string
-	Amount float64
+	Name   string  `json:"name"`
+	Amount float64 `json:"amount"`
+	GameId string  `json:"game_id"`
 }
 
 type CardModel struct {
-	Suit   string
-	Number string
+	Suit   string `json:"suit"`
+	Number string `json:"number"`
 }
 
 type PlayerStatusModel struct {
-	Cards []CardModel
-	Stack float64
-	InPot float64
+	Cards []*CardModel `json:"cards"`
+	Stack float64     `json:"stack"`
+	InPot float64     `json:"in_pot"`
 }
 
-type HandStatusModel struct {
-	ButtonPlayer int
-	CurrPlayer   int
-	Stacks       []float64
-	Players      []PlayerStatusModel
-
-	CurrPhase  string
-	LastAction ActionModel
-}
-
-type HandModel struct {
-	StartingStatus HandStatusModel
-	Actions        []ActionModel
+type GameStatusModel struct {
+	ButtonPlayer int                 `json:"button_player"`
+	CurrPlayer   int                 `json:"curr_player"`
+	Players      []*PlayerStatusModel `json:"players"`
+	CurrPhase    string              `json:"curr_phase"`
 }
 
 type GameModel struct {
-	Players       []string
-	SB            int
-	StartingChips int
-	BlindsTimer   int
-	BuyIn        int
+	Players       []string  `json:"players"`
+	SB            int       `json:"small_blind"`
+	StartingChips int       `json:"starting_chips"`
+	BlindsTimer   int       `json:"blinds_timer"`
+	BuyIn         int       `json:"buy_in"`
 
-	Hands []HandModel
-	Id    string
+	Status *GameStatusModel `json:"status"`
+	Id    string      `json:"game_id"`
 }

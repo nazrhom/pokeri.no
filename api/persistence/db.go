@@ -22,7 +22,7 @@ func InitDatabase(config api.DbConfig) *Database {
 	return &Database{client: client}
 }
 
-func (database *Database) SaveGame(model api.GameModel) error {
+func (database *Database) SaveGame(model *api.GameModel) error {
 	serialized, se := Serialize(model)
 	if se != nil {
 		log.Error(fmt.Sprintf("Error %v caught in serialization of model %v: ", se, model))
@@ -35,21 +35,21 @@ func (database *Database) SaveGame(model api.GameModel) error {
 	return nil
 
 }
-func (database *Database) LoadGame(gameId string) (api.GameModel, error) {
+func (database *Database) LoadGame(gameId string) (*api.GameModel, error) {
 	serialized, err := database.client.Get(database.ctx, gameId).Result()
 	if err != nil {
 		log.Error(fmt.Sprintf("Error while loading game %s", gameId))
-		return api.GameModel{}, err
+		return &api.GameModel{}, err
 	}
 	model, err := Deserialize(serialized)
 	if err != nil {
 		log.Error(fmt.Sprintf("Error while deserializing game %s", gameId))
-		return api.GameModel{}, err
+		return &api.GameModel{}, err
 	}
-	return model.(api.GameModel), nil
+	return model, nil
 
 }
-func Serialize(model api.Model) (string, error) {
+func Serialize(model *api.GameModel) (string, error) {
 	bytes, err := json.Marshal(model)
 	if err != nil {
 		log.Error(fmt.Sprintf("Error %v caught while in json marshaling", err))
@@ -58,12 +58,12 @@ func Serialize(model api.Model) (string, error) {
 	return string(bytes), nil
 }
 
-func Deserialize(str string) (api.Model, error) {
-	var game api.GameModel
-	err := json.Unmarshal([]byte(str), &game)
+func Deserialize(str string) (*api.GameModel, error) {
+	var model api.GameModel
+	err := json.Unmarshal([]byte(str), &model)
 	if err != nil {
-		log.Error("Error while deserializing game")
-		return game, err
+		log.Error("Error caught in json unmarshaling")
+		return &model, err
 	}
-	return game, nil
+	return &model, nil
 }

@@ -11,7 +11,7 @@ func initServer() {
 	gameController := new(GameController)
 	http.HandleFunc("/game", gameController.StartGame)
 	http.HandleFunc("/action", gameController.Action)
-
+	http.HandleFunc("/hand", gameController.StartHand)
 }
 func Start() {
 	initServer()
